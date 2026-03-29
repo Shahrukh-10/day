@@ -76,7 +76,7 @@ export default function CountdownPage({ onTimerDone, onGiftClick, timerDone }: C
     const birthdate = 'April 5, 2026';
     const countDown = new Date(birthdate + ' 00:00:00').getTime();
 
-    const interval = setInterval(() => {
+    function tick() {
       const now = new Date().getTime();
       const distance = countDown - now;
 
@@ -91,9 +91,11 @@ export default function CountdownPage({ onTimerDone, onGiftClick, timerDone }: C
         if (minuteTopRef.current) minuteTopRef.current.textContent = '0';
         if (secondTopRef.current) secondTopRef.current.textContent = '0';
         onTimerDone();
-        clearInterval(interval);
       }
-    }, second);
+    }
+
+    tick();
+    const interval = setInterval(tick, second);
 
     return () => clearInterval(interval);
   }, [onTimerDone]);
