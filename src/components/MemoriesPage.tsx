@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import Image from 'next/image';
 
 interface MemoriesPageProps {
   onBack: () => void;
@@ -9,11 +8,11 @@ interface MemoriesPageProps {
 }
 
 const memories = [
-  { src: '/media/img1.jpeg', caption: 'A beautiful moment', date: '2025' },
-  { src: '/media/img2.jpeg', caption: 'Cherished memories', date: '2025' },
-  { src: '/media/img3.jpeg', caption: 'Together forever', date: '2025' },
-  { src: '/media/img4.jpeg', caption: 'Golden times', date: '2025' },
-  { src: '/media/img5.jpeg', caption: 'Precious smiles', date: '2025' },
+  { src: '/day/media/img1.jpeg', caption: 'A beautiful moment', date: '2025' },
+  { src: '/day/media/img2.jpeg', caption: 'Cherished memories', date: '2025' },
+  { src: '/day/media/img3.jpeg', caption: 'Together forever', date: '2025' },
+  { src: '/day/media/img4.jpeg', caption: 'Golden times', date: '2025' },
+  { src: '/day/media/img5.jpeg', caption: 'Precious smiles', date: '2025' },
 ];
 
 const instaMemories = [
@@ -412,7 +411,7 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
       <div className="memories-grid">
         {memories.slice(0, 4).map((mem, i) => (
           <div key={i} className="memory-card fade-in" onClick={() => openLightbox(i)}>
-            <Image src={mem.src} alt={mem.caption} width={400} height={400} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={mem.src} alt={mem.caption} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <div className="card-caption">
               <span className="caption-text">{mem.caption}</span>
               <span className="caption-date">{mem.date}</span>
@@ -430,7 +429,7 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
         </div>
 
         <div className="memory-card fade-in" onClick={() => openLightbox(4)}>
-          <Image src={memories[4].src} alt={memories[4].caption} width={400} height={400} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={memories[4].src} alt={memories[4].caption} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div className="card-caption">
             <span className="caption-text">{memories[4].caption}</span>
             <span className="caption-date">{memories[4].date}</span>
@@ -451,7 +450,7 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
         <div className="lightbox-counter">{lightboxIndex + 1} / {memories.length}</div>
         <div className="lightbox-img-wrap" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           {lightboxOpen && (
-            <Image src={memories[lightboxIndex].src} alt="Full view" className="lightbox-img" width={800} height={800} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+            <img src={memories[lightboxIndex].src} alt="Full view" className="lightbox-img" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
           )}
         </div>
         <button className="lightbox-nav lightbox-prev" onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => (prev - 1 + memories.length) % memories.length); }}>‹</button>

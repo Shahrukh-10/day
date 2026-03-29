@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { config } from '@/config';
-import Image from 'next/image';
 
 interface SurprisePageProps {
   onContinue: () => void;
@@ -486,12 +485,12 @@ export default function SurprisePage({ onContinue, startMusic }: SurprisePagePro
         <div className="slayer-effects" id="slayerEffects">
           <div className="slayer tanjiro">
             <div className="img-wrap">
-              <Image src="/media/tanjiro.jpeg" alt="Tanjiro" className="slayer-img tanjiro-img" width={140} height={140} />
+              <img src="/day/media/tanjiro.jpeg" alt="Tanjiro" className="slayer-img tanjiro-img" width={140} height={140} />
             </div>
           </div>
           <div className="slayer zenitsu">
             <div className="img-wrap">
-              <Image src="/media/zenitsu.png" alt="Zenitsu" className="slayer-img zenitsu-img" width={140} height={140} />
+              <img src="/day/media/zenitsu.png" alt="Zenitsu" className="slayer-img zenitsu-img" width={140} height={140} />
             </div>
           </div>
           <div className="slash-cross">
