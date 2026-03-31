@@ -5,12 +5,13 @@ import CountdownPage from '@/components/CountdownPage';
 import GlobePage from '@/components/GlobePage';
 import SurprisePage from '@/components/SurprisePage';
 import MessagePage from '@/components/MessagePage';
+import GiftPage from '@/components/GiftPage';
 import MemoriesPage from '@/components/MemoriesPage';
 import ScratchPage from '@/components/ScratchPage';
 import TreatPage from '@/components/TreatPage';
 import MusicFab from '@/components/MusicFab';
 
-type PageName = 'countdown' | 'globe' | 'surprise' | 'message' | 'memories' | 'scratch' | 'treat';
+type PageName = 'countdown' | 'globe' | 'surprise' | 'message' | 'gift' | 'memories' | 'scratch' | 'treat';
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<PageName>('countdown');
@@ -38,11 +39,15 @@ export default function Home() {
   const handleStartMusic = useCallback(() => setMusicShouldPlay(true), []);
 
   const handleMessageContinue = useCallback(() => {
+    navigateTo('gift');
+  }, [navigateTo]);
+
+  const handleGiftContinue = useCallback(() => {
     navigateTo('memories');
     setShowReplay(true);
   }, [navigateTo]);
 
-  const handleMemoriesBack = useCallback(() => navigateTo('message'), [navigateTo]);
+  const handleMemoriesBack = useCallback(() => navigateTo('gift'), [navigateTo]);
 
   const handleMemoriesNext = useCallback(() => navigateTo('scratch'), [navigateTo]);
 
@@ -70,6 +75,10 @@ export default function Home() {
         <MessagePage onContinue={handleMessageContinue} />
       )}
 
+      {currentPage === 'gift' && (
+        <GiftPage onContinue={handleGiftContinue} />
+      )}
+
       {currentPage === 'memories' && (
         <MemoriesPage onBack={handleMemoriesBack} onNext={handleMemoriesNext} />
       )}
@@ -83,7 +92,7 @@ export default function Home() {
       )}
 
       {showReplay && (
-        <button className="replay-fab" aria-label="Replay experience" onClick={() => window.location.reload()}>
+        <button className="replay-fab" aria-label="Replay experience" onClick={() => globalThis.location.reload()}>
           <span>&#8634;</span>
         </button>
       )}

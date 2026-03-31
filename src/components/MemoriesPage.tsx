@@ -378,7 +378,7 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
     return (
       <div className={`faltu-popup-overlay ${faltuExiting ? 'exiting' : ''}`}>
         <div className="faltu-popup">
-          <h2 className="faltu-title">Ab meri faltu ki memories dekho aur haso 😅</h2>
+          <h2 className="faltu-title">Ab meri faltu ki memories dekho 😅</h2>
           <div className="faltu-btn-row">
             {buttonsSwapped ? (
               <>

@@ -1,16 +1,36 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { config } from '@/config';
 
 interface MessagePageProps {
   onContinue: () => void;
 }
 
-export default function MessagePage({ onContinue }: MessagePageProps) {
+export default function MessagePage({ onContinue }: Readonly<MessagePageProps>) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const messageTextRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const touchStartXRef = useRef(0);
+  const [typingDone, setTypingDone] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const toggleCard = useCallback(() => {
+    if (!typingDone) return;
+    setIsFlipped(prev => !prev);
+  }, [typingDone]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (!typingDone) return;
+    const diff = touchStartXRef.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      setIsFlipped(diff < 0);
+    }
+  }, [typingDone]);
 
   // Sakura petals
   useEffect(() => {
@@ -77,6 +97,8 @@ export default function MessagePage({ onContinue }: MessagePageProps) {
     if (!el) return;
     const fullText = config.birthdayMessage;
     let charIndex = 0;
+    setTypingDone(false);
+    setIsFlipped(false);
     el.innerHTML = '';
 
     const typeInterval = setInterval(() => {
@@ -89,6 +111,7 @@ export default function MessagePage({ onContinue }: MessagePageProps) {
       } else {
         clearInterval(typeInterval);
         setTimeout(() => {
+          setTypingDone(true);
           if (btnRef.current) btnRef.current.style.display = 'block';
         }, 500);
       }
@@ -107,18 +130,37 @@ export default function MessagePage({ onContinue }: MessagePageProps) {
         <div className="message-envelope">
           <div className="envelope-flap"></div>
           <div className="envelope-body">
-            <div className="message-card" id="messageCard">
-              <div className="message-text" ref={messageTextRef}></div>
-              <div className="message-signature">
-                <span>With love,</span>
-                <span className="signature-heart">❤</span>
+            <div
+              className={`message-card-shell ${isFlipped ? 'flipped' : ''}`}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="message-card-face message-card-front message-card" id="messageCard">
+                <div className="message-text" ref={messageTextRef}></div>
+                <div className={`message-signature ${typingDone ? 'visible' : ''}`}>
+                  {/* <span>With love,</span>
+                  <span className="signature-heart">❤</span> */}
+                </div>
+              </div>
+
+              <div className="message-card-face message-card-back">
+                <div className="private-note-block">
+                  <span className="private-note-label">A little note for you</span>
+                  <p className="private-note-text">{config.personalMessage}</p>
+                </div>
               </div>
             </div>
+
+            {typingDone && (
+              <button type="button" className="card-swipe-hint" onClick={toggleCard}>
+                {isFlipped ? 'Turn the card back' : 'Swipe to turn the card'}
+              </button>
+            )}
           </div>
         </div>
       </div>
       <button ref={btnRef} className="next-btn" style={{ display: 'none' }} onClick={onContinue}>
-        See Memories ⟶
+        Open Your Gift ⟶
       </button>
     </div>
   );

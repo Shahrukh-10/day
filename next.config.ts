@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   basePath: '/day',
   assetPrefix: '/day',
   images: { unoptimized: true },
-  allowedDevOrigins: ["192.168.29.203"],
+  allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.29.203", "192.168.29.204"],
   devIndicators: false,
 };
 
