@@ -300,7 +300,6 @@ export default function RoseBouquetPage({ onContinue }: RoseBouquetPageProps) {
         {showBtn && (
           <button className="rb-btn" onClick={onContinue}>
             <span>Unwrap Your Gift</span>
-            <span className="rb-btn-heart">❤️</span>
           </button>
         )}
       </div>
