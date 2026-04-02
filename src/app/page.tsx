@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import RoseBouquetPage from '@/components/RoseBouquetPage';
 import CountdownPage from '@/components/CountdownPage';
 import GlobePage from '@/components/GlobePage';
 import SurprisePage from '@/components/SurprisePage';
@@ -11,7 +12,7 @@ import ScratchPage from '@/components/ScratchPage';
 import TreatPage from '@/components/TreatPage';
 import MusicFab from '@/components/MusicFab';
 
-type PageName = 'countdown' | 'globe' | 'surprise' | 'message' | 'gift' | 'memories' | 'scratch' | 'treat';
+type PageName = 'countdown' | 'globe' | 'surprise' | 'message' | 'gift' | 'memories' | 'roses' | 'scratch' | 'treat';
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<PageName>('countdown');
@@ -49,7 +50,9 @@ export default function Home() {
 
   const handleMemoriesBack = useCallback(() => navigateTo('gift'), [navigateTo]);
 
-  const handleMemoriesNext = useCallback(() => navigateTo('scratch'), [navigateTo]);
+  const handleMemoriesNext = useCallback(() => navigateTo('roses'), [navigateTo]);
+
+  const handleRosesContinue = useCallback(() => navigateTo('scratch'), [navigateTo]);
 
   return (
     <>
@@ -81,6 +84,10 @@ export default function Home() {
 
       {currentPage === 'memories' && (
         <MemoriesPage onBack={handleMemoriesBack} onNext={handleMemoriesNext} />
+      )}
+
+      {currentPage === 'roses' && (
+        <RoseBouquetPage onContinue={handleRosesContinue} />
       )}
 
       {currentPage === 'scratch' && (
