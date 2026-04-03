@@ -18,6 +18,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState<PageName>('countdown');
   const [timerDone, setTimerDone] = useState(false);
   const [musicShouldPlay, setMusicShouldPlay] = useState(false);
+  const [musicSuspended, setMusicSuspended] = useState(false);
   const [showReplay, setShowReplay] = useState(false);
 
   const navigateTo = useCallback((page: PageName) => {
@@ -56,7 +57,7 @@ export default function Home() {
 
   return (
     <>
-      <MusicFab shouldPlay={musicShouldPlay} />
+      <MusicFab shouldPlay={musicShouldPlay} suspended={musicSuspended} />
 
       {currentPage === 'countdown' && (
         <CountdownPage
@@ -83,7 +84,11 @@ export default function Home() {
       )}
 
       {currentPage === 'memories' && (
-        <MemoriesPage onBack={handleMemoriesBack} onNext={handleMemoriesNext} />
+        <MemoriesPage
+          onBack={handleMemoriesBack}
+          onNext={handleMemoriesNext}
+          onSpecialMemoryModalToggle={setMusicSuspended}
+        />
       )}
 
       {currentPage === 'roses' && (

@@ -4,12 +4,14 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 
 interface MusicFabProps {
   shouldPlay: boolean;
+  suspended: boolean;
 }
 
-export default function MusicFab({ shouldPlay }: MusicFabProps) {
+export default function MusicFab({ shouldPlay, suspended }: Readonly<MusicFabProps>) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const userPaused = useRef(false);
+  const pausedBySuspend = useRef(false);
 
   useEffect(() => {
     const audio = new Audio('/day/audio/Happy Birthday To You Ji-(Mr-Jat.in).mp3');
@@ -22,10 +24,32 @@ export default function MusicFab({ shouldPlay }: MusicFabProps) {
   }, []);
 
   useEffect(() => {
-    if (shouldPlay && !playing && !userPaused.current && audioRef.current) {
+    if (!suspended && shouldPlay && !playing && !userPaused.current && audioRef.current) {
       audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
     }
-  }, [shouldPlay, playing]);
+  }, [shouldPlay, playing, suspended]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (suspended) {
+      pausedBySuspend.current = !audio.paused;
+      if (!audio.paused) {
+        audio.pause();
+        setPlaying(false);
+      }
+      return;
+    }
+
+    if (pausedBySuspend.current && shouldPlay && !userPaused.current) {
+      pausedBySuspend.current = false;
+      audio.play().then(() => setPlaying(true)).catch(() => {});
+      return;
+    }
+
+    pausedBySuspend.current = false;
+  }, [shouldPlay, suspended]);
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
@@ -40,7 +64,7 @@ export default function MusicFab({ shouldPlay }: MusicFabProps) {
     }
   }, [playing]);
 
-  if (!shouldPlay && !playing) return null;
+  if ((!shouldPlay && !playing) || suspended) return null;
 
   return (
     <button className={`music-fab${playing ? ' playing' : ''}`} aria-label="Toggle music" onClick={toggle}>

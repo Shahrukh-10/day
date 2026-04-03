@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface RoseBouquetPageProps {
   onContinue: () => void;
@@ -40,17 +40,27 @@ const ROSE_IMAGES = [
   '/day/media/roses/rose12.jpg',  // 80K  832×1248  — Bouquet gift
 ];
 
-// Slide configs: 8 slides cycling through 12 images with varied Ken Burns
+// Slide configs: all 12 images with varied Ken Burns moves.
 const SLIDES = [
   { img: 0,  dur: 2500, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-1%,-1%)' },  // HERO luxury bouquet opener
   { img: 1,  dur: 2200, from: 'scale(1.1) translate(2%,0)',    to: 'scale(1.2) translate(-2%,1%)' },   // dewdrop macro close-up
+  { img: 2,  dur: 2200, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark
+  { img: 3,  dur: 2100, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
   { img: 4,  dur: 2200, from: 'scale(1.15) translate(0,2%)',   to: 'scale(1.0) translate(0,0)' },      // bouquet aesthetic
+  { img: 5,  dur: 2100, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
   { img: 6,  dur: 2200, from: 'scale(1.0) translate(-2%,0)',   to: 'scale(1.15) translate(2%,-2%)' },  // single rose HD
-  { img: 3,  dur: 2000, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
+  { img: 7,  dur: 2000, from: 'scale(1.14) translate(1%,2%)',  to: 'scale(1.02) translate(-1%,-1%)' }, // macro rose
+  { img: 8,  dur: 2100, from: 'scale(1.02) translate(-2%,1%)', to: 'scale(1.14) translate(1%,-2%)' },  // bouquet
   { img: 9,  dur: 2000, from: 'scale(1.1) translate(-1%,1%)',  to: 'scale(1.0) translate(1%,0)' },     // dewdrop rose
-  { img: 5,  dur: 2200, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
-  { img: 2,  dur: 2500, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark (finale)
+  { img: 10, dur: 2100, from: 'scale(1.08) translate(0,1%)',   to: 'scale(1.16) translate(-1%,-2%)' }, // single rose dark
+  { img: 11, dur: 2400, from: 'scale(1.03) translate(0,0)',    to: 'scale(1.12) translate(0,-1%)' },   // bouquet gift finale
 ];
+
+const INTRO_FADE_MS = 300;
+const FINAL_SLIDE_INDEX = SLIDES.length - 1;
+const TEXT_REVEAL_SLIDE_INDEX = FINAL_SLIDE_INDEX;
+const NAME_REVEAL_SLIDE_INDEX = FINAL_SLIDE_INDEX;
+const BUTTON_REVEAL_DELAY_MS = 1200;
 
 // Pre-computed sparkle positions (avoids Math.random in render → hydration mismatch)
 const SPARKLE_DATA = [
@@ -95,7 +105,7 @@ function createPetal(W: number, H: number, startY?: number): Petal {
     x: Math.random() * W,
     y: startY ?? -20 - Math.random() * 80,
     size: 6 + Math.random() * 12,
-    speedY: 0.4 + Math.random() * 1.0,
+    speedY: 0.4 + Math.random(),
     rotation: Math.random() * Math.PI * 2,
     rotSpeed: (Math.random() - 0.5) * 0.03,
     color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
@@ -106,7 +116,7 @@ function createPetal(W: number, H: number, startY?: number): Petal {
   };
 }
 
-export default function RoseBouquetPage({ onContinue }: RoseBouquetPageProps) {
+export default function RoseBouquetPage({ onContinue }: Readonly<RoseBouquetPageProps>) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
   const [phase, setPhase] = useState(0);     // 0=black, 1=slideshow, 2=text, 3=ready
@@ -119,29 +129,32 @@ export default function RoseBouquetPage({ onContinue }: RoseBouquetPageProps) {
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
     const t = (fn: () => void, ms: number) => { timers.push(setTimeout(fn, ms)); };
+    const slideStartTimes = SLIDES.reduce<number[]>((times, slide, index) => {
+      if (index === 0) {
+        times.push(INTRO_FADE_MS);
+        return times;
+      }
 
-    // 0.3s: fade in, start slideshow
-    t(() => { setFadeClass('rb-visible'); setPhase(1); }, 300);
-    // 2.5s: slide 2 (black rose)
-    t(() => setSlideIdx(1), 2500);
-    // 4.7s: slide 3 (red with raindrops)
-    t(() => setSlideIdx(2), 4700);
-    // 6.9s: slide 4 (bouquet baby's breath)
-    t(() => setSlideIdx(3), 6900);
-    // 7.5s: show text "For You"
-    t(() => setPhase(2), 7500);
-    // 8.5s: show name "Fakeha"
-    t(() => setShowName(true), 8500);
-    // 9.1s: slide 5 (dark red moody)
-    t(() => setSlideIdx(4), 9100);
-    // 11.1s: slide 6 (bouquet black paper)
-    t(() => setSlideIdx(5), 11100);
-    // 13.1s: slide 7 (B&W macro)
-    t(() => setSlideIdx(6), 13100);
-    // 15.3s: slide 8 (final bouquet with ribbon)
-    t(() => setSlideIdx(7), 15300);
-    // 16.5s: show continue button
-    t(() => { setPhase(3); setShowBtn(true); }, 16500);
+      const previousStart = times[index - 1];
+      const previousSlide = SLIDES[index - 1];
+      times.push(previousStart + previousSlide.dur);
+      return times;
+    }, []);
+    const textRevealAt = slideStartTimes[TEXT_REVEAL_SLIDE_INDEX] ?? slideStartTimes[Math.max(slideStartTimes.length - 2, 0)] ?? INTRO_FADE_MS;
+    const nameRevealAt = slideStartTimes[NAME_REVEAL_SLIDE_INDEX] ?? textRevealAt + 1200;
+    const lastSlideStart = slideStartTimes.at(-1) ?? INTRO_FADE_MS;
+    const buttonRevealAt = lastSlideStart + BUTTON_REVEAL_DELAY_MS;
+
+    // Fade in and start the slideshow.
+    t(() => { setFadeClass('rb-visible'); setPhase(1); }, INTRO_FADE_MS);
+
+    slideStartTimes.slice(1).forEach((startTime, index) => {
+      t(() => setSlideIdx(index + 1), startTime);
+    });
+
+    t(() => setPhase(2), textRevealAt);
+    t(() => setShowName(true), nameRevealAt);
+    t(() => { setPhase(3); setShowBtn(true); }, buttonRevealAt);
 
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -225,7 +238,7 @@ export default function RoseBouquetPage({ onContinue }: RoseBouquetPageProps) {
       <div className="rb-slideshow">
         {SLIDES.map((slide, i) => (
           <div
-            key={i}
+            key={ROSE_IMAGES[slide.img]}
             className={`rb-slide ${slideIdx === i ? 'rb-slide-active' : ''}`}
             style={{
               backgroundImage: `url(${ROSE_IMAGES[slide.img]})`,
@@ -248,9 +261,9 @@ export default function RoseBouquetPage({ onContinue }: RoseBouquetPageProps) {
 
       {/* Sparkles — fixed positions to avoid hydration mismatch */}
       <div className="rb-sparkles">
-        {SPARKLE_DATA.map((s, i) => (
+        {SPARKLE_DATA.map((s) => (
           <div
-            key={i}
+            key={`${s.left}-${s.top}-${s.delay}`}
             className="rb-spark"
             style={{
               left: s.left,
@@ -265,9 +278,9 @@ export default function RoseBouquetPage({ onContinue }: RoseBouquetPageProps) {
 
       {/* Floating emoji roses */}
       <div className="rb-float-roses">
-        {FLOAT_EMOJIS.map((e, i) => (
+        {FLOAT_EMOJIS.map((e) => (
           <span
-            key={i}
+            key={`${e.emoji}-${e.left}-${e.delay}`}
             className="rb-float-emoji"
             style={{
               left: e.left,
@@ -284,10 +297,10 @@ export default function RoseBouquetPage({ onContinue }: RoseBouquetPageProps) {
       <div className="rb-content">
         {phase >= 2 && (
           <div className="rb-text-area">
-            <p className="rb-for-you">For You</p>
+            <p className="rb-for-you">All For You</p>
             {showName && (
               <h1 className="rb-name">
-                Faku
+                {'Faku '}
                 <span className="rb-rose-icon">🌹</span>
               </h1>
             )}

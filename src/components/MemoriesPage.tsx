@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 interface MemoriesPageProps {
   onBack: () => void;
   onNext: () => void;
+  onSpecialMemoryModalToggle: (isOpen: boolean) => void;
 }
 
 const memories = [
@@ -25,7 +26,8 @@ const instaMemories = [
   { src: '/day/insta_memories/1_reel_video.mp4', type: 'video' as const, date: 'A Special Reel', caption: 'Our story continues...', year: '✨' },
 ];
 
-export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
+// eslint-disable-next-line sonarjs/cognitive-complexity
+export default function MemoriesPage({ onBack, onNext, onSpecialMemoryModalToggle }: Readonly<MemoriesPageProps>) {
   // --- Cinematic Reel State ---
   const [showReel, setShowReel] = useState(true);
   const [reelPhase, setReelPhase] = useState<'intro' | 'playing' | 'outro'>('intro');
@@ -45,9 +47,35 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const petalsRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const specialAudioRef = useRef<HTMLAudioElement>(null);
   const [playBtnHidden, setPlayBtnHidden] = useState(false);
+  const [specialMemoryOpen, setSpecialMemoryOpen] = useState(false);
   const touchStartX = useRef(0);
   const pageRef = useRef<HTMLDivElement>(null);
+
+  const handleActionKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>, action: () => void) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      action();
+    }
+  }, []);
+
+  const transitionReelSlide = useCallback((direction: -1 | 1, delay = 300) => {
+    setSlideDirection('exit');
+    setTimeout(() => {
+      setCurrentSlide(prev => prev + direction);
+      setSlideDirection('enter');
+    }, delay);
+  }, []);
+
+  const advanceReelSlide = useCallback((delay = 300) => {
+    if (currentSlide >= instaMemories.length - 1) {
+      setReelPhase('outro');
+      return;
+    }
+
+    transitionReelSlide(1, delay);
+  }, [currentSlide, transitionReelSlide]);
 
   // --- Cinematic Reel Logic ---
 
@@ -119,16 +147,8 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
   }, [currentSlide, showReel, reelPhase]);
 
   const handleVideoEnd = useCallback(() => {
-    if (currentSlide < instaMemories.length - 1) {
-      setSlideDirection('exit');
-      setTimeout(() => {
-        setCurrentSlide(prev => prev + 1);
-        setSlideDirection('enter');
-      }, 800);
-    } else {
-      setReelPhase('outro');
-    }
-  }, [currentSlide]);
+    advanceReelSlide(800);
+  }, [advanceReelSlide]);
 
   // Outro → faltu popup transition
   useEffect(() => {
@@ -165,23 +185,12 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
     const tapX = e.clientX - rect.left;
 
     if (tapX < rect.width * 0.3 && currentSlide > 0) {
-      setSlideDirection('exit');
-      setTimeout(() => {
-        setCurrentSlide(prev => prev - 1);
-        setSlideDirection('enter');
-      }, 300);
-    } else {
-      if (currentSlide < instaMemories.length - 1) {
-        setSlideDirection('exit');
-        setTimeout(() => {
-          setCurrentSlide(prev => prev + 1);
-          setSlideDirection('enter');
-        }, 300);
-      } else {
-        setReelPhase('outro');
-      }
+      transitionReelSlide(-1);
+      return;
     }
-  }, [reelPhase, currentSlide]);
+
+    advanceReelSlide();
+  }, [advanceReelSlide, currentSlide, reelPhase, transitionReelSlide]);
 
   const handleSkipAll = useCallback(() => {
     setReelExiting(true);
@@ -225,7 +234,7 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
     const page = pageRef.current;
     if (!page) return;
     const cards = page.querySelectorAll('.memory-card');
-    if ('IntersectionObserver' in window) {
+    if ('IntersectionObserver' in globalThis) {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -263,6 +272,37 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
     setLightboxIndex(index);
     setLightboxOpen(true);
   }, []);
+
+  const openSpecialMemory = useCallback(() => {
+    setSpecialMemoryOpen(true);
+  }, []);
+
+  const closeSpecialMemory = useCallback(() => {
+    const audio = specialAudioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    setSpecialMemoryOpen(false);
+  }, []);
+
+  useEffect(() => {
+    onSpecialMemoryModalToggle(specialMemoryOpen);
+
+    if (!specialMemoryOpen) {
+      return;
+    }
+
+    const audio = specialAudioRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
+
+    return () => {
+      onSpecialMemoryModalToggle(false);
+    };
+  }, [onSpecialMemoryModalToggle, specialMemoryOpen]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -306,7 +346,14 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
 
         {/* Playing phase — slides */}
         {reelPhase === 'playing' && (
-          <div className={`reel-slide ${slideDirection}`} onClick={handleReelTap} key={currentSlide}>
+          <button
+            type="button"
+            className={`reel-slide ${slideDirection}`}
+            onClick={handleReelTap}
+            onKeyDown={(event) => handleActionKeyDown(event, advanceReelSlide)}
+            key={slide.src}
+            aria-label="Advance memory reel"
+          >
             {/* Background blur */}
             <div className="reel-bg-blur">
               {slide.type === 'video' ? (
@@ -347,11 +394,11 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
 
             {/* Timeline dots */}
             <div className="reel-timeline">
-              {instaMemories.map((_, i) => (
-                <div key={i} className={`reel-dot ${i === currentSlide ? 'active' : ''} ${i < currentSlide ? 'done' : ''}`} />
+              {instaMemories.map((item, i) => (
+                <div key={item.src} className={`reel-dot ${i === currentSlide ? 'active' : ''} ${i < currentSlide ? 'done' : ''}`} />
               ))}
             </div>
-          </div>
+          </button>
         )}
 
         {/* Outro phase */}
@@ -410,32 +457,60 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
 
       <div className="memories-grid">
         {memories.slice(0, 4).map((mem, i) => (
-          <div key={i} className="memory-card fade-in" onClick={() => openLightbox(i)}>
+          <button
+            type="button"
+            key={mem.src}
+            className="memory-card fade-in"
+            onClick={() => openLightbox(i)}
+            onKeyDown={(event) => handleActionKeyDown(event, () => openLightbox(i))}
+            aria-label={`Open memory ${i + 1}`}
+          >
             <img src={mem.src} alt={mem.caption} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <div className="card-caption">
               <span className="caption-text">{mem.caption}</span>
               <span className="caption-date">{mem.date}</span>
             </div>
             <div className="card-glow"></div>
-          </div>
+          </button>
         ))}
 
         <div className="memory-card wide fade-in">
           <video ref={videoRef} src="/day/media/vid1.mp4" playsInline muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onClick={() => { if (videoRef.current && !videoRef.current.paused) { videoRef.current.pause(); setPlayBtnHidden(false); } }}
             onEnded={() => setPlayBtnHidden(false)} />
-          <div className={`play-btn ${playBtnHidden ? 'hidden' : ''}`} onClick={handlePlayBtn}>▶</div>
+          <button type="button" className={`play-btn ${playBtnHidden ? 'hidden' : ''}`} onClick={handlePlayBtn} aria-label="Play memory video">▶</button>
           <div className="card-glow"></div>
         </div>
 
-        <div className="memory-card fade-in" onClick={() => openLightbox(4)}>
+        <button
+          type="button"
+          className="memory-card fade-in"
+          onClick={() => openLightbox(4)}
+          onKeyDown={(event) => handleActionKeyDown(event, () => openLightbox(4))}
+          aria-label="Open memory 5"
+        >
           <img src={memories[4].src} alt={memories[4].caption} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div className="card-caption">
             <span className="caption-text">{memories[4].caption}</span>
             <span className="caption-date">{memories[4].date}</span>
           </div>
           <div className="card-glow"></div>
-        </div>
+        </button>
+
+        <button
+          type="button"
+          className="memory-card wide precious-memory-card fade-in"
+          onClick={openSpecialMemory}
+          onKeyDown={(event) => handleActionKeyDown(event, openSpecialMemory)}
+          aria-label="Open precious voice memory"
+        >
+          <div className="precious-memory-content">
+            <span className="precious-memory-tag">Last one</span>
+            <h3 className="precious-memory-title">Precious one</h3>
+            <p className="precious-memory-subtitle">Tap to open the voice memory</p>
+          </div>
+          <div className="card-glow"></div>
+        </button>
       </div>
 
       <div className="memories-footer">
@@ -445,7 +520,16 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
       </div>
 
       {/* Lightbox */}
-      <div className={`lightbox ${lightboxOpen ? 'active' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setLightboxOpen(false); }}>
+      {lightboxOpen && (
+        <dialog
+          open
+          className="lightbox active"
+          onCancel={(event) => {
+            event.preventDefault();
+            setLightboxOpen(false);
+          }}
+          aria-label="Memory lightbox"
+        >
         <button className="lightbox-close" onClick={() => setLightboxOpen(false)}>&times;</button>
         <div className="lightbox-counter">{lightboxIndex + 1} / {memories.length}</div>
         <div className="lightbox-img-wrap" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
@@ -455,7 +539,35 @@ export default function MemoriesPage({ onBack, onNext }: MemoriesPageProps) {
         </div>
         <button className="lightbox-nav lightbox-prev" onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => (prev - 1 + memories.length) % memories.length); }}>‹</button>
         <button className="lightbox-nav lightbox-next" onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => (prev + 1) % memories.length); }}>›</button>
-      </div>
+        </dialog>
+      )}
+
+      {specialMemoryOpen && (
+        <dialog
+          open
+          className="precious-memory-modal active"
+          onCancel={(event) => {
+            event.preventDefault();
+            closeSpecialMemory();
+          }}
+          aria-label="Precious voice memory"
+        >
+        <div className="precious-memory-modal-card">
+          <button className="precious-memory-close" onClick={closeSpecialMemory} aria-label="Close precious memory">×</button>
+          <p className="precious-memory-note">
+            hmne isme s background noice hata di taki apki alsi clear awaz aye,kha tha na ki bhut achi awaz hai 😅😅😅. 
+          </p>
+          <div className="precious-memory-player-card">
+            <span className="precious-memory-player-tag">Precious one</span>
+            <h3 className="precious-memory-player-title">Your Song :)</h3>
+            <audio ref={specialAudioRef} controls preload="metadata" className="precious-memory-audio">
+              <source src="/day/audio/Audio.mpeg" type="audio/mpeg" />
+              <track kind="captions" src="/day/audio/Audio.vtt" srcLang="en" label="Voice memory transcript" />
+            </audio>
+          </div>
+        </div>
+        </dialog>
+      )}
     </div>
   );
 }
