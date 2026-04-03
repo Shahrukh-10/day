@@ -41,25 +41,26 @@ const ROSE_IMAGES = [
 ];
 
 // Slide configs: all 12 images with varied Ken Burns moves.
+// ~1.5–2s each so it feels brisk but not rushed. Last image (rose12) holds longest.
 const SLIDES = [
-  { img: 0,  dur: 1550, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-1%,-1%)' },  // HERO luxury bouquet opener
-  { img: 1,  dur: 1400, from: 'scale(1.1) translate(2%,0)',    to: 'scale(1.2) translate(-2%,1%)' },   // dewdrop macro close-up
-  { img: 2,  dur: 1400, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark
-  { img: 3,  dur: 1360, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
-  { img: 4,  dur: 1400, from: 'scale(1.15) translate(0,2%)',   to: 'scale(1.0) translate(0,0)' },      // bouquet aesthetic
-  { img: 5,  dur: 1360, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
-  { img: 6,  dur: 1400, from: 'scale(1.0) translate(-2%,0)',   to: 'scale(1.15) translate(2%,-2%)' },  // single rose HD
-  { img: 7,  dur: 1320, from: 'scale(1.14) translate(1%,2%)',  to: 'scale(1.02) translate(-1%,-1%)' }, // macro rose
-  { img: 8,  dur: 1360, from: 'scale(1.02) translate(-2%,1%)', to: 'scale(1.14) translate(1%,-2%)' },  // bouquet
-  { img: 9,  dur: 1320, from: 'scale(1.1) translate(-1%,1%)',  to: 'scale(1.0) translate(1%,0)' },     // dewdrop rose
-  { img: 10, dur: 1360, from: 'scale(1.08) translate(0,1%)',   to: 'scale(1.16) translate(-1%,-2%)' }, // single rose dark
-  { img: 11, dur: 2350, from: 'scale(1.03) translate(0,0)',    to: 'scale(1.12) translate(0,-1%)' },   // bouquet gift finale
+  { img: 0,  dur: 2000, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-1%,-1%)' },  // HERO luxury bouquet opener
+  { img: 1,  dur: 1600, from: 'scale(1.1) translate(2%,0)',    to: 'scale(1.2) translate(-2%,1%)' },   // dewdrop macro close-up
+  { img: 2,  dur: 1600, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark
+  { img: 3,  dur: 1500, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
+  { img: 4,  dur: 1600, from: 'scale(1.15) translate(0,2%)',   to: 'scale(1.0) translate(0,0)' },      // bouquet aesthetic
+  { img: 5,  dur: 1500, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
+  { img: 6,  dur: 1600, from: 'scale(1.0) translate(-2%,0)',   to: 'scale(1.15) translate(2%,-2%)' },  // single rose HD
+  { img: 7,  dur: 1500, from: 'scale(1.14) translate(1%,2%)',  to: 'scale(1.02) translate(-1%,-1%)' }, // macro rose
+  { img: 8,  dur: 1500, from: 'scale(1.02) translate(-2%,1%)', to: 'scale(1.14) translate(1%,-2%)' },  // bouquet
+  { img: 9,  dur: 1500, from: 'scale(1.1) translate(-1%,1%)',  to: 'scale(1.0) translate(1%,0)' },     // dewdrop rose
+  { img: 10, dur: 1500, from: 'scale(1.08) translate(0,1%)',   to: 'scale(1.16) translate(-1%,-2%)' }, // single rose dark
+  { img: 11, dur: 3000, from: 'scale(1.03) translate(0,0)',    to: 'scale(1.12) translate(0,-1%)' },   // rose12 — bouquet gift FINALE (holds longer)
 ];
 
 const INTRO_FADE_MS = 300;
-const FINAL_SLIDE_TEXT_DELAY_MS = 220;
-const FINAL_SLIDE_NAME_DELAY_MS = 620;
-const BUTTON_REVEAL_DELAY_MS = 1500;
+const FINAL_SLIDE_TEXT_DELAY_MS = 300;
+const FINAL_SLIDE_NAME_DELAY_MS = 800;
+const BUTTON_REVEAL_DELAY_MS = 1800;
 
 // Pre-computed sparkle positions (avoids Math.random in render → hydration mismatch)
 const SPARKLE_DATA = [
