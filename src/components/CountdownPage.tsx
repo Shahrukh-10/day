@@ -73,7 +73,7 @@ export default function CountdownPage({ onTimerDone, onGiftClick, timerDone }: C
     const minute = second * 60;
     const hour = minute * 60;
     const dayMs = hour * 24;
-    const birthdate = 'April 5, 2026';
+    const birthdate = 'April 1, 2026';
     const countDown = new Date(birthdate + ' 00:00:00').getTime();
 
     function tick() {
