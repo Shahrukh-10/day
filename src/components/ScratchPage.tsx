@@ -192,7 +192,7 @@ export default function ScratchPage() {
 
   const handleSend = useCallback(() => {
     if (!selectedFood) return;
-    const msg = `I'd love to have ${selectedFood} 🤤\n\n`;
+    const msg = `I want ${selectedFood} \n\n`;
     const url = `https://wa.me/${config.whatsappNumber}?text=${encodeURIComponent(msg)}`;
     window.location.href = url;
   }, [selectedFood]);

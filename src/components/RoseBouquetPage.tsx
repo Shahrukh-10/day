@@ -124,6 +124,7 @@ export default function RoseBouquetPage({ onContinue }: Readonly<RoseBouquetPage
   const [showName, setShowName] = useState(false);
   const [showBtn, setShowBtn] = useState(false);
   const [fadeClass, setFadeClass] = useState('');
+  const [showContinueModal, setShowContinueModal] = useState(false);
 
   // ─── Timeline Controller ───
   useEffect(() => {
@@ -311,7 +312,7 @@ export default function RoseBouquetPage({ onContinue }: Readonly<RoseBouquetPage
         )}
 
         {showBtn && (
-          <button className="rb-btn" onClick={onContinue}>
+          <button className="rb-btn" onClick={() => setShowContinueModal(true)}>
             <span>Unwrap Your Gift</span>
           </button>
         )}
@@ -319,6 +320,22 @@ export default function RoseBouquetPage({ onContinue }: Readonly<RoseBouquetPage
 
       {/* Breathing glow at bottom */}
       <div className="rb-bottom-glow" />
+
+      {showContinueModal && (
+        <div className="rb-modal-backdrop">
+          <div className="rb-modal-card">
+            <p className="rb-modal-text">Gana sunte rhna hai to sunte rho 😁</p>
+            <div className="rb-modal-actions">
+              <button type="button" className="rb-modal-btn rb-modal-btn-secondary" onClick={() => setShowContinueModal(false)}>
+                Yes
+              </button>
+              <button type="button" className="rb-modal-btn rb-modal-btn-primary" onClick={onContinue}>
+                Move to next one
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -11,6 +11,8 @@ import MemoriesPage from '@/components/MemoriesPage';
 import ScratchPage from '@/components/ScratchPage';
 import TreatPage from '@/components/TreatPage';
 import MusicFab from '@/components/MusicFab';
+import RoseSongIsland from '@/components/RoseSongIsland';
+import SupportInfoFab from '@/components/SupportInfoFab';
 
 type PageName = 'countdown' | 'globe' | 'surprise' | 'message' | 'gift' | 'memories' | 'roses' | 'scratch' | 'treat';
 
@@ -18,8 +20,10 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState<PageName>('countdown');
   const [timerDone, setTimerDone] = useState(false);
   const [musicShouldPlay, setMusicShouldPlay] = useState(false);
-  const [musicSuspended, setMusicSuspended] = useState(false);
+  const [memoryModalMusicSuspended, setMemoryModalMusicSuspended] = useState(false);
   const [showReplay, setShowReplay] = useState(false);
+  const roseTrackActive = currentPage === 'roses';
+  const musicSuspended = memoryModalMusicSuspended || roseTrackActive;
 
   const navigateTo = useCallback((page: PageName) => {
     setCurrentPage(page);
@@ -58,6 +62,8 @@ export default function Home() {
   return (
     <>
       <MusicFab shouldPlay={musicShouldPlay} suspended={musicSuspended} />
+      {currentPage !== 'countdown' && <SupportInfoFab />}
+      {roseTrackActive && <RoseSongIsland />}
 
       {currentPage === 'countdown' && (
         <CountdownPage
@@ -87,7 +93,7 @@ export default function Home() {
         <MemoriesPage
           onBack={handleMemoriesBack}
           onNext={handleMemoriesNext}
-          onSpecialMemoryModalToggle={setMusicSuspended}
+          onSpecialMemoryModalToggle={setMemoryModalMusicSuspended}
         />
       )}
 
