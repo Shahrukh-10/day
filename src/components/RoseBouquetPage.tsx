@@ -42,25 +42,24 @@ const ROSE_IMAGES = [
 
 // Slide configs: all 12 images with varied Ken Burns moves.
 const SLIDES = [
-  { img: 0,  dur: 1500, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-1%,-1%)' },  // HERO luxury bouquet opener
-  { img: 1,  dur: 1350, from: 'scale(1.1) translate(2%,0)',    to: 'scale(1.2) translate(-2%,1%)' },   // dewdrop macro close-up
-  { img: 2,  dur: 1350, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark
-  { img: 3,  dur: 1300, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
-  { img: 4,  dur: 1350, from: 'scale(1.15) translate(0,2%)',   to: 'scale(1.0) translate(0,0)' },      // bouquet aesthetic
-  { img: 5,  dur: 1300, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
-  { img: 6,  dur: 1350, from: 'scale(1.0) translate(-2%,0)',   to: 'scale(1.15) translate(2%,-2%)' },  // single rose HD
-  { img: 7,  dur: 1250, from: 'scale(1.14) translate(1%,2%)',  to: 'scale(1.02) translate(-1%,-1%)' }, // macro rose
-  { img: 8,  dur: 1300, from: 'scale(1.02) translate(-2%,1%)', to: 'scale(1.14) translate(1%,-2%)' },  // bouquet
-  { img: 9,  dur: 1250, from: 'scale(1.1) translate(-1%,1%)',  to: 'scale(1.0) translate(1%,0)' },     // dewdrop rose
-  { img: 10, dur: 1300, from: 'scale(1.08) translate(0,1%)',   to: 'scale(1.16) translate(-1%,-2%)' }, // single rose dark
-  { img: 11, dur: 1800, from: 'scale(1.03) translate(0,0)',    to: 'scale(1.12) translate(0,-1%)' },   // bouquet gift finale
+  { img: 0,  dur: 1550, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-1%,-1%)' },  // HERO luxury bouquet opener
+  { img: 1,  dur: 1400, from: 'scale(1.1) translate(2%,0)',    to: 'scale(1.2) translate(-2%,1%)' },   // dewdrop macro close-up
+  { img: 2,  dur: 1400, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark
+  { img: 3,  dur: 1360, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
+  { img: 4,  dur: 1400, from: 'scale(1.15) translate(0,2%)',   to: 'scale(1.0) translate(0,0)' },      // bouquet aesthetic
+  { img: 5,  dur: 1360, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
+  { img: 6,  dur: 1400, from: 'scale(1.0) translate(-2%,0)',   to: 'scale(1.15) translate(2%,-2%)' },  // single rose HD
+  { img: 7,  dur: 1320, from: 'scale(1.14) translate(1%,2%)',  to: 'scale(1.02) translate(-1%,-1%)' }, // macro rose
+  { img: 8,  dur: 1360, from: 'scale(1.02) translate(-2%,1%)', to: 'scale(1.14) translate(1%,-2%)' },  // bouquet
+  { img: 9,  dur: 1320, from: 'scale(1.1) translate(-1%,1%)',  to: 'scale(1.0) translate(1%,0)' },     // dewdrop rose
+  { img: 10, dur: 1360, from: 'scale(1.08) translate(0,1%)',   to: 'scale(1.16) translate(-1%,-2%)' }, // single rose dark
+  { img: 11, dur: 2350, from: 'scale(1.03) translate(0,0)',    to: 'scale(1.12) translate(0,-1%)' },   // bouquet gift finale
 ];
 
 const INTRO_FADE_MS = 300;
-const FINAL_SLIDE_INDEX = SLIDES.length - 1;
-const TEXT_REVEAL_SLIDE_INDEX = FINAL_SLIDE_INDEX;
-const NAME_REVEAL_SLIDE_INDEX = FINAL_SLIDE_INDEX;
-const BUTTON_REVEAL_DELAY_MS = 1200;
+const FINAL_SLIDE_TEXT_DELAY_MS = 220;
+const FINAL_SLIDE_NAME_DELAY_MS = 620;
+const BUTTON_REVEAL_DELAY_MS = 1500;
 
 // Pre-computed sparkle positions (avoids Math.random in render → hydration mismatch)
 const SPARKLE_DATA = [
@@ -141,9 +140,9 @@ export default function RoseBouquetPage({ onContinue }: Readonly<RoseBouquetPage
       times.push(previousStart + previousSlide.dur);
       return times;
     }, []);
-    const textRevealAt = slideStartTimes[TEXT_REVEAL_SLIDE_INDEX] ?? slideStartTimes[Math.max(slideStartTimes.length - 2, 0)] ?? INTRO_FADE_MS;
-    const nameRevealAt = slideStartTimes[NAME_REVEAL_SLIDE_INDEX] ?? textRevealAt + 1200;
     const lastSlideStart = slideStartTimes.at(-1) ?? INTRO_FADE_MS;
+    const textRevealAt = lastSlideStart + FINAL_SLIDE_TEXT_DELAY_MS;
+    const nameRevealAt = lastSlideStart + FINAL_SLIDE_NAME_DELAY_MS;
     const buttonRevealAt = lastSlideStart + BUTTON_REVEAL_DELAY_MS;
 
     // Fade in and start the slideshow.
@@ -298,10 +297,10 @@ export default function RoseBouquetPage({ onContinue }: Readonly<RoseBouquetPage
       <div className="rb-content">
         {phase >= 2 && (
           <div className="rb-text-area">
-            <p className="rb-for-you">For You</p>
+            <p className="rb-for-you">All For You</p>
             {showName && (
               <h1 className="rb-name">
-                {'Fakeha '}
+                {'Faku '}
                 <span className="rb-rose-icon">🌹</span>
               </h1>
             )}
