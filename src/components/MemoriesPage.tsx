@@ -555,7 +555,7 @@ export default function MemoriesPage({ onBack, onNext, onSpecialMemoryModalToggl
         <div className="precious-memory-modal-card">
           <button className="precious-memory-close" onClick={closeSpecialMemory} aria-label="Close precious memory">×</button>
           <p className="precious-memory-note">
-            hmne isme s background noice hata di taki apki alsi clear awaz aye,kha tha na ki bhut achi awaz hai 😄😄😄. 
+            hmne isme s background noice hata di taki apki asli clear awaz aye,kha tha na ki bhut achi awaz hai 😄😄😄. 
             <br/>Iske bad ki achi line thi wo mera kya patience test krri thi madam 😅😅
           </p>
           <div className="precious-memory-player-card">

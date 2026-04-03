@@ -42,18 +42,18 @@ const ROSE_IMAGES = [
 
 // Slide configs: all 12 images with varied Ken Burns moves.
 const SLIDES = [
-  { img: 0,  dur: 2500, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-1%,-1%)' },  // HERO luxury bouquet opener
-  { img: 1,  dur: 2200, from: 'scale(1.1) translate(2%,0)',    to: 'scale(1.2) translate(-2%,1%)' },   // dewdrop macro close-up
-  { img: 2,  dur: 2200, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark
-  { img: 3,  dur: 2100, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
-  { img: 4,  dur: 2200, from: 'scale(1.15) translate(0,2%)',   to: 'scale(1.0) translate(0,0)' },      // bouquet aesthetic
-  { img: 5,  dur: 2100, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
-  { img: 6,  dur: 2200, from: 'scale(1.0) translate(-2%,0)',   to: 'scale(1.15) translate(2%,-2%)' },  // single rose HD
-  { img: 7,  dur: 2000, from: 'scale(1.14) translate(1%,2%)',  to: 'scale(1.02) translate(-1%,-1%)' }, // macro rose
-  { img: 8,  dur: 2100, from: 'scale(1.02) translate(-2%,1%)', to: 'scale(1.14) translate(1%,-2%)' },  // bouquet
-  { img: 9,  dur: 2000, from: 'scale(1.1) translate(-1%,1%)',  to: 'scale(1.0) translate(1%,0)' },     // dewdrop rose
-  { img: 10, dur: 2100, from: 'scale(1.08) translate(0,1%)',   to: 'scale(1.16) translate(-1%,-2%)' }, // single rose dark
-  { img: 11, dur: 2400, from: 'scale(1.03) translate(0,0)',    to: 'scale(1.12) translate(0,-1%)' },   // bouquet gift finale
+  { img: 0,  dur: 1500, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-1%,-1%)' },  // HERO luxury bouquet opener
+  { img: 1,  dur: 1350, from: 'scale(1.1) translate(2%,0)',    to: 'scale(1.2) translate(-2%,1%)' },   // dewdrop macro close-up
+  { img: 2,  dur: 1350, from: 'scale(1.05) translate(0,0)',    to: 'scale(1.1) translate(0,-1%)' },    // luxury bouquet dark
+  { img: 3,  dur: 1300, from: 'scale(1.05) translate(1%,0)',   to: 'scale(1.15) translate(-1%,-2%)' }, // moody rose close-up
+  { img: 4,  dur: 1350, from: 'scale(1.15) translate(0,2%)',   to: 'scale(1.0) translate(0,0)' },      // bouquet aesthetic
+  { img: 5,  dur: 1300, from: 'scale(1.0) translate(0,0)',     to: 'scale(1.12) translate(-2%,1%)' },  // bouquet dark
+  { img: 6,  dur: 1350, from: 'scale(1.0) translate(-2%,0)',   to: 'scale(1.15) translate(2%,-2%)' },  // single rose HD
+  { img: 7,  dur: 1250, from: 'scale(1.14) translate(1%,2%)',  to: 'scale(1.02) translate(-1%,-1%)' }, // macro rose
+  { img: 8,  dur: 1300, from: 'scale(1.02) translate(-2%,1%)', to: 'scale(1.14) translate(1%,-2%)' },  // bouquet
+  { img: 9,  dur: 1250, from: 'scale(1.1) translate(-1%,1%)',  to: 'scale(1.0) translate(1%,0)' },     // dewdrop rose
+  { img: 10, dur: 1300, from: 'scale(1.08) translate(0,1%)',   to: 'scale(1.16) translate(-1%,-2%)' }, // single rose dark
+  { img: 11, dur: 1800, from: 'scale(1.03) translate(0,0)',    to: 'scale(1.12) translate(0,-1%)' },   // bouquet gift finale
 ];
 
 const INTRO_FADE_MS = 300;
@@ -298,10 +298,10 @@ export default function RoseBouquetPage({ onContinue }: Readonly<RoseBouquetPage
       <div className="rb-content">
         {phase >= 2 && (
           <div className="rb-text-area">
-            <p className="rb-for-you">All For You</p>
+            <p className="rb-for-you">For You</p>
             {showName && (
               <h1 className="rb-name">
-                {'Faku '}
+                {'Fakeha '}
                 <span className="rb-rose-icon">🌹</span>
               </h1>
             )}
